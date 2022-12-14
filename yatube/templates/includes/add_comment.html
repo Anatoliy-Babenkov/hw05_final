@@ -1,0 +1,36 @@
+{% load user_filters %}
+
+{% if user.is_authenticated %}
+  <div class="container py-5">
+    <div class="card my-4">
+      <h5 class="card-header" style="background-color: lightskyblue">
+        <font color="white">Добавить комментарий:</font>
+      </h5>
+        <div class="card-body">
+          <form method="post" action="{% url 'posts:ad_comment' post.id %}">
+            {% csrf_token %}      
+          <div class="form-group mb-2">
+            {{ form.text|addclass:"form-control" }}
+          </div>
+          <button type="submit" class="btn btn-primary">Отправить</button>
+          </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for comment in comments %}
+      <div class="media mb-4" style="background-color: #FFF8DC; border:2px #FFF8DC solid #555; 
+      border-radius:5px; margin:20px; padding:20px;">
+        <div class="media-body" style=>
+          <h5 class="mt-0">
+            <a href="{% url 'posts:profile' comment.author.username %}">
+              {{ comment.author.get_full_name }}
+            </a>
+          </h5>
+          <p>
+            {{ comment.text }}
+          </p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>

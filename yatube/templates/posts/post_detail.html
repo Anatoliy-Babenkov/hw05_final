@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}
+  Запись: {{ post }}...
+{% endblock %}
+{% block content %}
+{% load thumbnail %}
+<div class="container py-5">
+  <div style="background-color: #FFF8DC; border:2px #FFF8DC solid #555; 
+    border-radius:5px; margin:20px; padding:20px;">
+    <div class="row">
+     <aside class="col-12 col-md-3"> 
+        <ul class="list-group list-group-flush">
+          <li>
+            <b>Дата публикации: {{ post.pub_date|date:"d E Y" }}</b>
+          </li>
+          <li>
+            {% if post.group %}    
+              <b>Все записи группы:</b> <a href="{% url 'posts:post_group' post.group.slug %}">{{ post.group.title }}</a>
+            {% endif %}
+          </li>
+          <li>
+              <b>Автор:</b> <a href="{% url 'posts:profile' post.author %}">{{ post.author.get_full_name }}</a>
+          </li>
+          <li>
+            <b><span>Всего постов автора: {{ post.author.posts.count }}</span></b>
+          </li>
+        </ul>
+     </aside>
+      <article class="col-12 col-md-9">
+        {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+          <img class="card-img my-2" src="{{ im.url }}">
+        {% endthumbnail %}
+        <p>{{ post.text }}</p>
+        {% if post.author == request.user %} 
+        <button type="submit" class="btn btn-primary"> 
+          <a href="{% url 'posts:post_edit' post.id %}" class="text-white" style="text-decoration: none">
+            Редактировать пост
+          </a>
+        </button>
+        {% endif %}
+      </article>
+    </div>
+  </div>
+</div>
+{% include 'includes/add_comment.html' %} 
+{% endblock %}

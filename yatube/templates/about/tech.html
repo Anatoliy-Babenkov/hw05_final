@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Технологии{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <h1>Вот что я умею</h1>
+      <aside class="col-12 col-md-3">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Python
+        </li>
+        <li class="list-group-item">
+          Django
+        </li>
+      </ul>
+    </aside>
+    <article class="col-12 col-md-9">
+      <p>Всё что использовано, я узнал на <span style="color:red">Я</span>Практикум. 
+        Знания позволяющие создать подобное можно получить на интересных уроках.
+        Хотелось бы отметить и тот факт, что это лишь начало моего пути в освоении данного курса.
+        Уверен, пройдёт совсем немного времени и мои знания на данном поприще окрепнут и обрастут
+        новыми. 
+      </p>
+    </article>
+  </div>
+</div>
+{% endblock %}
