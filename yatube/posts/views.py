@@ -59,13 +59,12 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     template = 'posts/post_detail.html'
     count = post.author.posts.count()
-    title = post
     form = CommentForm(request.POST or None)
     comments = Comment.objects.select_related('post')
     context = {
         'post': post,
         'count': count,
-        'title': title,
+        'title': post,
         'comments': comments,
         'form': form,
     }
@@ -153,8 +152,7 @@ def profile_follow(request, username):
     """Подписка на автора"""
     author = get_object_or_404(User, username=username)
     follower = request.user
-    follower_list = Follow.objects.filter(author=author, user=follower)
-    if follower_list.exists() or follower == author:
+    if follower == author:
         return redirect('posts:index')
     Follow.objects.get_or_create(
         author=author,
@@ -170,7 +168,6 @@ def profile_unfollow(request, username):
     follower = request.user
     follower_list = Follow.objects.filter(author=author, user=follower)
     if not follower_list.exists():
-        return redirect('posts:index')
-    if follower_list.exists():
-        follower_list.delete()
+        return redirect('posts:profile', username)
+    follower_list.delete()
     return redirect('posts:profile', username)

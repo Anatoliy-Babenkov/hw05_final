@@ -155,9 +155,10 @@ class CommentFormTests(PostFormTests):
             HTTPStatus.FOUND
         )
         self.assertEqual(Comment.objects.count(), 1)
-        self.assertTrue(Comment.objects.filter(text=form_data.get('text')))
-        self.assertTrue(Comment.objects.filter(author=self.user))
-        self.assertTrue(Comment.objects.filter(post=post_tst))
+        self.assertTrue(Comment.objects.filter(
+            text=form_data.get('text'),
+            author=self.user,
+            post=post_tst).exists())
 
     def test_comment_cant_comment(self):
         """Комментарии не могут оставлять гости"""

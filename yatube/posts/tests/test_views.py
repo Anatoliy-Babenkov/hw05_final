@@ -157,7 +157,7 @@ class PostViewTests(TestCase):
                 self.assertIsInstance(form_field, expected)
 
     def test_users_can_follow(self):
-        """Зарегистрированный пользователь может подписаться и отписаться"""
+        """Зарегистрированный пользователь может подписаться"""
         followers = Follow.objects.count()
         response = self.authorized_client_another.get(
             reverse('posts:profile_follow', args=(self.user,))
@@ -167,14 +167,17 @@ class PostViewTests(TestCase):
             HTTPStatus.FOUND
         )
         self.assertEqual(Follow.objects.count(), followers + 1)
+        response = self.authorized_client_another.get(
+            reverse('posts:follow_index'))
+        self.assertContains(response, self.user)
 
     def test_users_can_unfollow(self):
-        """Зарегистрированный пользователь может подписаться и отписаться"""
-        followers_0 = Follow.objects.count()
-        self.authorized_client_another.get(
-            reverse('posts:profile_follow', args=(self.user,))
+        """Зарегистрированный пользователь может отписаться"""
+        Follow.objects.create(
+            user=self.user_another,
+            author=self.user
         )
-        followers_1 = Follow.objects.count()
+        followers = Follow.objects.count()
         response = self.authorized_client_another.get(
             reverse('posts:profile_unfollow', args=(self.user,))
         )
@@ -182,12 +185,14 @@ class PostViewTests(TestCase):
             response, reverse('posts:profile', args=(self.user,)),
             HTTPStatus.FOUND
         )
-        self.assertEqual(Follow.objects.count(), followers_1 - 1)
-        self.assertEqual(followers_0, followers_1 - 1)
+        self.assertEqual(Follow.objects.count(), followers - 1)
+        response = self.authorized_client_another.get(
+            reverse('posts:follow_index'))
+        self.assertNotContains(response, self.user)
 
     def test_post_appears_at_follower_profile(self):
         """Сообщение появляется в ленте подписчика"""
-        Follow.objects.get_or_create(
+        Follow.objects.create(
             user=self.user_another,
             author=self.user
         )
@@ -197,7 +202,7 @@ class PostViewTests(TestCase):
         self.assertContains(response, self.post)
         Follow.objects.filter(
             user=self.user_another,
-            author__username=self.user.username
+            author=self.user
         ).delete()
         response = self.authorized_client_another.get(
             reverse('posts:follow_index')

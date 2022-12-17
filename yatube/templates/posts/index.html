@@ -28,6 +28,7 @@
           <p>{{ post.text }}</p>
         </article>
       </div>
+      <br/>
       {% if post.group %}  
         <a href="{% url 'posts:post_group' post.group.slug %}" 
           class="btn btn-primary">Все записи группы</a>
