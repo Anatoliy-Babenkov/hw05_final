@@ -41,7 +41,7 @@ class Post(models.Model):
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.text[:15]
+        return self.text[:30]
 
 
 class Group(models.Model):
@@ -82,7 +82,7 @@ class Comment(models.Model):
     )
     text = models.TextField(
         verbose_name='Текст комментария',
-        help_text='Текст сообщения',
+        help_text='Текст комментария',
         null=False
     )
     created = models.DateTimeField(
@@ -105,13 +105,15 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='Подписчик'
+        verbose_name='Подписчик',
+        help_text='Автор комментария'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Автор'
+        verbose_name='Автор',
+        help_text='Автор комментируемого сообщения'
     )
 
     class Meta:
@@ -119,4 +121,4 @@ class Follow(models.Model):
         verbose_name_plural = 'followers'
 
     def __str__(self):
-        return f'{self.user.username}, {self.following.username}'
+        return f'{self.user.username}, {self.author.username}'

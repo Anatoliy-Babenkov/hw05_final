@@ -12,17 +12,17 @@
             <h6>Подписчиков: {{ author.following.count }}</h6>
             </br>
 						<div>
-                  {% if following %}
-                    <a class="btn btn-outline-danger" href="{% url 'posts:profile_unfollow' author.username %}" role="button">Отписаться</a>
-                  {% else %}
-                    <a class="btn btn-success" href="{% url 'posts:profile_follow' author.username %}" role="button">Подписаться</a>
-                  {% endif %}
+              {% if following %}
+                <a class="btn btn-outline-danger" href="{% url 'posts:profile_unfollow' author.username %}" role="button">Отписаться</a>
+              {% else %}
+                <a class="btn btn-success" href="{% url 'posts:profile_follow' author.username %}" role="button">Подписаться</a>
+              {% endif %}
             </div>
           </div>
       {% else %}
-            <h3>Всего моих сообщений: {{ author.posts.count }}</h3>
-            <h6>Подписчиков: {{ author.following.count }}</h6>
-            </br>
+        <h3>Всего моих сообщений: {{ author.posts.count }}</h3>
+        <h6>Подписчиков: {{ author.following.count }}</h6>
+        </br>
       {% endif %}
   {% for post in page_obj %}
     <div style="background-color: #FFF8DC; border:2px #FFF8DC solid #555; 

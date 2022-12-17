@@ -156,7 +156,7 @@ class PostViewTests(TestCase):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
 
-    def test_users_can_follow_and_unfollow(self):
+    def test_users_can_follow(self):
         """Зарегистрированный пользователь может подписаться и отписаться"""
         followers = Follow.objects.count()
         response = self.authorized_client_another.get(
@@ -167,6 +167,14 @@ class PostViewTests(TestCase):
             HTTPStatus.FOUND
         )
         self.assertEqual(Follow.objects.count(), followers + 1)
+
+    def test_users_can_unfollow(self):
+        """Зарегистрированный пользователь может подписаться и отписаться"""
+        followers_0 = Follow.objects.count()
+        self.authorized_client_another.get(
+            reverse('posts:profile_follow', args=(self.user,))
+        )
+        followers_1 = Follow.objects.count()
         response = self.authorized_client_another.get(
             reverse('posts:profile_unfollow', args=(self.user,))
         )
@@ -174,7 +182,8 @@ class PostViewTests(TestCase):
             response, reverse('posts:profile', args=(self.user,)),
             HTTPStatus.FOUND
         )
-        self.assertEqual(Follow.objects.count(), followers)
+        self.assertEqual(Follow.objects.count(), followers_1 - 1)
+        self.assertEqual(followers_0, followers_1 - 1)
 
     def test_post_appears_at_follower_profile(self):
         """Сообщение появляется в ленте подписчика"""

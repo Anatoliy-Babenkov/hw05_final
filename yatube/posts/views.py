@@ -40,8 +40,12 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     template = 'posts/profile.html'
-    following = Follow.objects.filter(
-        user=request.user.pk, author=author)
+    following = False
+    if request.user.is_authenticated and Follow.objects.filter(
+        user=request.user,
+        author=author
+    ).exists():
+        following = True
     context = {
         'author': author,
         'count': count,
@@ -55,7 +59,7 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     template = 'posts/post_detail.html'
     count = post.author.posts.count()
-    title = post.text[:30]
+    title = post
     form = CommentForm(request.POST or None)
     comments = Comment.objects.select_related('post')
     context = {
@@ -152,7 +156,7 @@ def profile_follow(request, username):
     follower_list = Follow.objects.filter(author=author, user=follower)
     if follower_list.exists() or follower == author:
         return redirect('posts:index')
-    Follow.objects.create(
+    Follow.objects.get_or_create(
         author=author,
         user=follower
     )
@@ -167,5 +171,6 @@ def profile_unfollow(request, username):
     follower_list = Follow.objects.filter(author=author, user=follower)
     if not follower_list.exists():
         return redirect('posts:index')
-    follower_list.delete()
+    if follower_list.exists():
+        follower_list.delete()
     return redirect('posts:profile', username)

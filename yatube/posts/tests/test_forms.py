@@ -37,7 +37,7 @@ class PostFormTests(TestCase):
         """Создаем клиент гостя и зарегистрированного пользователя"""
         self.unauthorized_client = Client()
         self.authorized_client = Client()
-        self.authorized_client.force_login(PostFormTests.user)
+        self.authorized_client.force_login(self.user)
 
     def test_create_post_authorized(self):
         """Убедимся в отсутствии сообщений и создадим сообщение в Post"""
@@ -70,8 +70,8 @@ class PostFormTests(TestCase):
         self.assertTrue(
             Post.objects.filter(
                 text=form_data['text'],
-                group=PostFormTests.group,
-                author=PostFormTests.user,
+                group=self.group,
+                author=self.user,
                 image='posts/test.gif',
             ).exists()
         )
@@ -80,7 +80,7 @@ class PostFormTests(TestCase):
         """Пытаемся создать запись в Post"""
         form_data = {
             'text': 'Новое сообщение',
-            'group': PostFormTests.group.pk,
+            'group': self.group.pk,
         }
         response = self.unauthorized_client.post(
             reverse('posts:post_create'),
@@ -101,7 +101,7 @@ class PostFormTests(TestCase):
         )
         form_data = {
             'text': 'Измененное сообщение',
-            'group': PostFormTests.group.pk,
+            'group': self.group.pk,
         }
         response = self.authorized_client.post(
             reverse(
@@ -128,9 +128,11 @@ class PostFormTests(TestCase):
             self.user
         )
 
+
+class CommentFormTests(PostFormTests):
     def test_comment_for_registered_users(self):
         """Комментарии могут оставлять зарегистрированные пользователи"""
-        Post.objects.create(
+        post_tst = Post.objects.create(
             author=self.user,
             text='Тестовое сообщение',
             group=self.group
@@ -153,6 +155,9 @@ class PostFormTests(TestCase):
             HTTPStatus.FOUND
         )
         self.assertEqual(Comment.objects.count(), 1)
+        self.assertTrue(Comment.objects.filter(text=form_data.get('text')))
+        self.assertTrue(Comment.objects.filter(author=self.user))
+        self.assertTrue(Comment.objects.filter(post=post_tst))
 
     def test_comment_cant_comment(self):
         """Комментарии не могут оставлять гости"""
