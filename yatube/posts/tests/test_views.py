@@ -167,9 +167,7 @@ class PostViewTests(TestCase):
             HTTPStatus.FOUND
         )
         self.assertEqual(Follow.objects.count(), followers + 1)
-        response = self.authorized_client_another.get(
-            reverse('posts:follow_index'))
-        self.assertContains(response, self.user)
+        self.assertTrue(Follow.objects.filter(user=self.user_another))
 
     def test_users_can_unfollow(self):
         """Зарегистрированный пользователь может отписаться"""
@@ -186,9 +184,7 @@ class PostViewTests(TestCase):
             HTTPStatus.FOUND
         )
         self.assertEqual(Follow.objects.count(), followers - 1)
-        response = self.authorized_client_another.get(
-            reverse('posts:follow_index'))
-        self.assertNotContains(response, self.user)
+        self.assertFalse(Follow.objects.filter(user=self.user_another))
 
     def test_post_appears_at_follower_profile(self):
         """Сообщение появляется в ленте подписчика"""
