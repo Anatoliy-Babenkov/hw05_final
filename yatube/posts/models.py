@@ -119,9 +119,11 @@ class Follow(models.Model):
     class Meta:
         verbose_name = 'follower'
         verbose_name_plural = 'followers'
-        constraints = models.UniqueConstraint(
-            fields=('user', 'author'),
-            name='unique_pair'
+        constraints = (
+            models.UniqueConstraint(
+                fields=('user', 'author'),
+                name='unique_pair'
+            ),
         )
 
     def __str__(self):
